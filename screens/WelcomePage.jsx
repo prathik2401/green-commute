@@ -45,7 +45,7 @@ export function WelcomePage({ navigation }) {
       />
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("WelcomePage")}
+        onPress={() => navigation.navigate("HomePage")}
       >
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
