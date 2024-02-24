@@ -16,7 +16,7 @@ export function SignUpPage() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={require("../assets/images/green-commute-logos.jpeg")}
+          source={require("../assets/images/green-commute-logos-white.png")}
           style={styles.logoFormat}
         ></Image>
       </View>
