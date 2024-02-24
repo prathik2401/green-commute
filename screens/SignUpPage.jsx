@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 
-export function SignUpPage() {
+export function SignUpPage({ navigation }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,12 +20,14 @@ export function SignUpPage() {
           style={styles.logoFormat}
         ></Image>
       </View>
+      <View style={styles.blank}>
+        <Text style={styles.welcomeText}>Welcome!</Text>
+      </View>
       <View style={{ alignItems: "center" }}>
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
           Sign Up
         </Text>
       </View>
-      <Text style={styles.textGeneral}>Username</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter your username"
@@ -33,7 +35,6 @@ export function SignUpPage() {
         value={username}
         onChangeText={setUsername}
       />
-      <Text style={styles.textGeneral}>Email</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter your Email"
@@ -41,7 +42,6 @@ export function SignUpPage() {
         value={email}
         onChangeText={setEmail}
       />
-      <Text style={styles.textGeneral}>Password</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter Password"
@@ -50,10 +50,18 @@ export function SignUpPage() {
         value={password}
         onChangeText={setPassword}
       />
-      <Text>Sign Up</Text>
       <TouchableOpacity style={styles.button} onPress={{}}>
-        <Text>Sign Up</Text>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
+      <Text style={styles.signUpText}>
+        Already have an account?{" "}
+        <Text
+          style={{ color: "#294B29" }}
+          onPress={() => navigation.navigate("LoginPage")}
+        >
+          Sign In
+        </Text>
+      </Text>
     </View>
   );
 }
@@ -61,37 +69,60 @@ export function SignUpPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    justifyContent: "center",
-    paddingHorizontal: 20,
+    backgroundColor: "#F8F8F7",
+    alignItems: "center",
   },
   imageContainer: {
-    marginTop: 10,
+    paddingTop: 50,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 60,
+    backgroundColor: "#77BC3F",
+    width: "100%",
   },
   logoFormat: {
-    width: 150,
+    width: 350,
     height: 75,
     marginBottom: 40,
   },
+  welcomeText: {
+    fontSize: 40,
+    color: "#77BC3F",
+    marginRight: 150,
+    fontWeight: "900",
+    marginBottom: 50,
+  },
   input: {
-    backgroundColor: "#333",
-    color: "#fff",
-    borderRadius: 30,
-    padding: 10,
-    marginBottom: 10,
+    color: "black",
+    width: "80%",
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 30,
+    paddingHorizontal: 15,
+    backgroundColor: "rgba(119, 188, 63, 0.32)",
+    fontSize: 16,
   },
   button: {
-    backgroundColor: "#40A2E3",
-    padding: 15,
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  textGeneral: {
-    color: "white",
-    marginBottom: 10,
+    width: "40%",
+    height: "5%",
+    marginBottom: 12,
+    paddingHorizontal: 8,
+    backgroundColor: "#77BC3F",
+    borderRadius: 20,
     marginTop: 20,
+    justifyContent: "center",
+  },
+  signUpText: {
+    paddingTop: 15,
+    color: "#77BC3F",
+    fontSize: 14,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    lineHeight: 40,
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 1.8,
   },
 });
