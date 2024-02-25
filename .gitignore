@@ -36,3 +36,6 @@ yarn-error.*
 
 .vs
 .vscode
+
+.vs/**
+.vscode/**
