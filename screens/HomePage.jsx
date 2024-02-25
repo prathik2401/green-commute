@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,9 +7,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import FooterNavigation from "./FooterNavigation";
+import UserComponent from "./ProfilePage";
 
 const HomePage = ({ navigation }) => {
   const moveAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const [showUser, setShowUser] = useState(false);
+
+  const handleProfileButtonPress = () => {
+    setShowUser(true);
+  };
+
+  const handleHomeButtonPress = () => {
+    setShowUser(false);
+  };
 
   useEffect(() => {
     Animated.timing(moveAnim, {
@@ -19,49 +29,67 @@ const HomePage = ({ navigation }) => {
     }).start();
   }, [moveAnim]);
 
+  const user = {
+    fname: "John",
+    lname: "Doe",
+    email: "john.doe@example.com",
+    username: "johndoe",
+  };
+
   return (
     <View style={styles.container}>
-      <Animated.View style={{ transform: [{ translateY: moveAnim }] }}>
-        <Text style={styles.title}>Welcome to</Text>
-        <Text style={styles.greenCommuteTitle}>
-          The Green Commute Challenge!
-        </Text>
-      </Animated.View>
-      <Text style={styles.description}>
-        Join us in making commuting more{" "}
-        <Text style={styles.highlightText}>eco-friendly</Text>. Participate in
-        challenges, <Text style={styles.highlightText}>earn eco-points</Text>,
-        and climb the leaderboard!
-      </Text>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={styles.longbutton}
-          onPress={() => navigation.navigate("CommutePlannerPage")}
-        >
-          <Text style={styles.buttonText}>Plan Your Commute</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.shortbutton}
-          onPress={() => navigation.navigate("Challenges")}
-        >
-          <Text style={styles.buttonText}>Challenges</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={styles.bottomshortbutton}
-          onPress={() => navigation.navigate("Achievements")}
-        >
-          <Text style={styles.buttonText}>Achievements</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomlongbutton}
-          onPress={() => navigation.navigate("Leaderboard")}
-        >
-          <Text style={styles.buttonText}>Leaderboard</Text>
-        </TouchableOpacity>
-      </View>
-      <FooterNavigation navigation={navigation} />
+      {!showUser ? (
+        <>
+          <Animated.View style={{ transform: [{ translateY: moveAnim }] }}>
+            <Text style={styles.title}>Welcome to</Text>
+            <Text style={styles.greenCommuteTitle}>
+              The Green Commute Challenge!
+            </Text>
+          </Animated.View>
+          <Text style={styles.description}>
+            Join us in making commuting more{" "}
+            <Text style={styles.highlightText}>eco-friendly</Text>. Participate
+            in challenges,{" "}
+            <Text style={styles.highlightText}>earn eco-points</Text>, and climb
+            the leaderboard!
+          </Text>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.longbutton}
+              onPress={() => navigation.navigate("CommutePlannerPage")}
+            >
+              <Text style={styles.buttonText}>Plan Your Commute</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.shortbutton}
+              onPress={() => navigation.navigate("Challenges")}
+            >
+              <Text style={styles.buttonText}>Challenges</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.bottomshortbutton}
+              onPress={() => navigation.navigate("Achievements")}
+            >
+              <Text style={styles.buttonText}>Achievements</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.bottomlongbutton}
+              onPress={() => navigation.navigate("Leaderboard")}
+            >
+              <Text style={styles.buttonText}>Leaderboard</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <UserComponent user={user} />
+      )}
+      <FooterNavigation
+        navigation={navigation}
+        onUserButtonPress={handleProfileButtonPress}
+        onHomeButtonPress={handleHomeButtonPress}
+      />
     </View>
   );
 };
