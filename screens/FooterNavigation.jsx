@@ -1,14 +1,20 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { MaterialCommunityIcons, AntDesign, Entypo } from "@expo/vector-icons";
+import { AntDesign, Entypo, Foundation } from "@expo/vector-icons";
 
-const FooterNavigation = ({ navigation }) => {
+const FooterNavigation = ({
+  navigation,
+  onUserButtonPress,
+  onHomeButtonPress,
+}) => {
   return (
     <View style={styles.footer}>
-      <TouchableOpacity
-        style={styles.footerButton}
-        onPress={() => navigation.navigate("UserProfile")}
-      >
-        <MaterialCommunityIcons name="sword-cross" size={24} color="white" />
+      <TouchableOpacity style={styles.footerButton} onPress={onHomeButtonPress}>
+        <Foundation
+          name="home"
+          size={24}
+          color="white"
+          style={{ width: 30, textAlign: "center" }}
+        />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.footerButton}
@@ -16,10 +22,7 @@ const FooterNavigation = ({ navigation }) => {
       >
         <Entypo name="bar-graph" size={24} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.footerButton}
-        onPress={() => navigation.navigate("Challenges")}
-      >
+      <TouchableOpacity style={styles.footerButton} onPress={onUserButtonPress}>
         <AntDesign name="user" size={24} color="white" />
       </TouchableOpacity>
     </View>
