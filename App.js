@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WelcomePage } from './screens/WelcomePage';
 import { SignUpPage } from './screens/SignUpPage';
 import HomePage from './screens/HomePage';
+import CommutePlanner from './screens/CommutePlanner';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ export default function App() {
         <Stack.Screen name='LoginPage' component={WelcomePage}/>
         <Stack.Screen name='SignupPage' component={SignUpPage}/>
         <Stack.Screen name='HomePage' component={HomePage}/>
+        <Stack.Screen name='CommutePlannerPage' component={CommutePlanner}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
