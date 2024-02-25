@@ -9,6 +9,8 @@ import {
 } from "react-native";
 
 export function SignUpPage({ navigation }) {
+  const[fname,setFname]=useState("");
+  const[lname,setLname]=useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +30,21 @@ export function SignUpPage({ navigation }) {
           Sign Up
         </Text>
       </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your First Name"
+        placeholderTextColor="gray"
+        value={fname}
+        onChangeText={setFname}
+      />
+
+<TextInput
+        style={styles.input}
+        placeholder="Enter your Last Name"
+        placeholderTextColor="gray"
+        value={lname}
+        onChangeText={setLname}
+      />
       <TextInput
         style={styles.input}
         placeholder="Enter your username"
