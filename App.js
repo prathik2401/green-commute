@@ -8,6 +8,7 @@ import CommutePlanner from './screens/CommutePlanner';
 import UserComponent from './screens/ProfilePage';
 import Challenges from './screens/ChallengesPage';
 import Leaderboard from './screens/Leaderboard';
+import Achievements from './screens/Achievements';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name='ProfilePage' component={UserComponent}/>
         <Stack.Screen name='Challenges' component={Challenges}/>
         <Stack.Screen name='Leaderboard' component={Leaderboard}/>
+        <Stack.Screen name='Achievements' component={Achievements}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

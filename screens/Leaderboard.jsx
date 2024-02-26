@@ -1,35 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 
-const Leaderboard = ({ navigation }) => {
-  const [data, setData] = useState([]);
+const Leaderboard = () => {
+  const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
-    fetchLeaderboardData();
+    fetch("http://192.168.29.213:3000/leaderboard") // Replace with your server's IP and endpoint
+      .then((response) => response.json())
+      .then((data) => setLeaderboardData(data))
+      .catch((error) => console.error(error));
   }, []);
-
-  const fetchLeaderboardData = async () => {
-    // Replace with your server API and endpoint
-    const response = await fetch("https://your-server.com/api/leaderboard");
-    const json = await response.json();
-    setData(json);
-  };
-
-  const renderItem = ({ item }) => (
-    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-      <Text>{item.username}</Text>
-      <Text>{item.ecoPoints}</Text>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Leaderboard</Text>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      <SafeAreaView>
+        {leaderboardData.map((entry, index) => (
+          <View key={index} style={styles.card}>
+            <Text style={styles.rank}>{index + 1}</Text>
+            <Text style={styles.name}>{entry.user_name}</Text>
+            <Text style={styles.points}>{entry.points}</Text>
+          </View>
+        ))}
+      </SafeAreaView>
     </View>
   );
 };
@@ -37,9 +29,25 @@ const Leaderboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F8F7",
-    alignItems: "center",
+    padding: 10,
     justifyContent: "center",
+  },
+  card: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  rank: {
+    fontSize: 18,
+  },
+  name: {
+    fontSize: 18,
+  },
+  points: {
+    fontSize: 18,
   },
 });
 

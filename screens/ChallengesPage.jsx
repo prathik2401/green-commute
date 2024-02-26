@@ -12,9 +12,8 @@ const Challenges = ({ navigation }) => {
   }, []);
 
   const handleJoinChallenge = (challengeId) => {
-    navigation.navigate("ChallengeDetails", { challengeId });
+    navigation.navigate("HomePage", { challengeId }); //Have to implement a screen for this
   };
-  console.log(challenges);
 
   return (
     <View style={styles.container}>

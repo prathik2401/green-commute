@@ -14,9 +14,7 @@ const CommutePlanner = ({ navigation }) => {
   const [destination, setDestination] = useState("");
 
   const handlePlanCommute = () => {
-    // Here you can call the API to get the eco-friendly routes
-    // Then navigate to the screen that shows the routes
-    navigation.navigate("Routes", { startLocation, destination });
+    navigation.navigate("HomePage", { startLocation, destination }); //Have to implement a screen for this
   };
 
   return (
