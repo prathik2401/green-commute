@@ -60,6 +60,16 @@ app.post('/signup', (req, res) => {
     }); 
   });
 
+// Get a specific challenge by ID
+app.get('/challenges/:id', (req, res) => {
+  let sql = 'SELECT challenge_name, challenge_description FROM challenges WHERE challenge_id = ?';
+  db.query(sql, [req.params.id], (err, results) => {
+    if(err) throw err;
+    console.log(`Challenge ${req.params.id} fetched...`);
+    res.send(results);
+  });
+});
+
 app.listen('3000', () => {
   console.log('Server started on port 3000');
 });

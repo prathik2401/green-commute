@@ -11,8 +11,8 @@ const Challenges = ({ navigation }) => {
       .catch((error) => console.error(error));
   }, []);
 
-  const handleJoinChallenge = (challengeId) => {
-    navigation.navigate("HomePage", { challengeId }); //Have to implement a screen for this
+  const handleJoinChallenge = (challenge_id) => {
+    navigation.navigate("ChallengeDescription", { challenge_id, navigation });
   };
 
   return (
@@ -20,10 +20,8 @@ const Challenges = ({ navigation }) => {
       {challenges.map((challenge) => (
         <View key={challenge.challenge_id} style={styles.card}>
           <Text style={styles.challengeText}>{challenge.challenge_name}</Text>
-          <Text>{challenge.rules}</Text>
-          <Text>{challenge.scores}</Text>
           <TouchableOpacity
-            onPress={() => handleJoinChallenge(challenge.id)}
+            onPress={() => handleJoinChallenge(challenge.challenge_id)}
             style={styles.challengeButton}
           >
             <Text style={styles.challengeButtonText}>Join</Text>
@@ -39,7 +37,7 @@ export default Challenges;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#F8F8F7",
     alignItems: "center",
     justifyContent: "center",
   },
