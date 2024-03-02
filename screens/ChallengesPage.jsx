@@ -5,23 +5,23 @@ const Challenges = ({ navigation }) => {
   const [challenges, setChallenges] = useState([]);
 
   useEffect(() => {
-    fetch("http://192.168.29.213:3000/challenges") // Go to cmd, type ipconfig, and find the IPv4 Address for your computer. Replace it here.
+    fetch("http://192.168.0.101:3000/challenges") // Go to cmd, type ipconfig, and find the IPv4 Address for your computer. Replace it here.
       .then((response) => response.json())
       .then((data) => setChallenges(data))
       .catch((error) => console.error(error));
   }, []);
 
-  const handleJoinChallenge = (challenge_id) => {
-    navigation.navigate("ChallengeDescription", { challenge_id, navigation });
+  const handleJoinChallenge = (ChallengeID) => {
+    navigation.navigate("ChallengeDescription", { ChallengeID, navigation });
   };
 
   return (
     <View style={styles.container}>
       {challenges.map((challenge) => (
-        <View key={challenge.challenge_id} style={styles.card}>
-          <Text style={styles.challengeText}>{challenge.challenge_name}</Text>
+        <View key={challenge.ChallengeID} style={styles.card}>
+          <Text style={styles.challengeText}>{challenge.ChallengeName}</Text>
           <TouchableOpacity
-            onPress={() => handleJoinChallenge(challenge.challenge_id)}
+            onPress={() => handleJoinChallenge(challenge.ChallengeID)}
             style={styles.challengeButton}
           >
             <Text style={styles.challengeButtonText}>Join</Text>

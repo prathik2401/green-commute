@@ -7,13 +7,37 @@ import {
   Text,
   Image,
 } from "react-native";
+const handleSubmit = async () => {
+  const data = {
+    UserName: username,
+    FirstName: fname,
+    LastName: lname,
+    Email: email,
+    Password: password
+  };
 
+  const response = await fetch('http://localhost:5000/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (response.ok) {
+    console.log("MySQL connected ")
+  } else {
+    console.log("MySQL not connected")
+  }
+};
 export function SignUpPage({ navigation }) {
   const[fname,setFname]=useState("");
   const[lname,setLname]=useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>

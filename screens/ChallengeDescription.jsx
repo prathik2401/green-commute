@@ -5,8 +5,8 @@ const ChallengeDescription = ({ navigation, route }) => {
   const [challenge, setChallenge] = useState(null);
 
   useEffect(() => {
-    const { challenge_id } = route.params;
-    fetch(`http://192.168.29.213:3000/challenges/${challenge_id}`) // Replace with your server's IP and port
+    const { ChallengeID } = route.params;
+    fetch(`http:// 192.168.0.101:3000/challenges/${ChallengeID}`) // Replace with your server's IP and port
       .then((response) => response.json())
       .then((data) => setChallenge(data[0]))
       .catch((error) => console.error(error));
@@ -14,7 +14,7 @@ const ChallengeDescription = ({ navigation, route }) => {
 
   const handleJoinChallenge = () => {
     navigation.navigate("Congratulations", {
-      challenge_id: challenge.challenge_id,
+      ChallengeID: challenge.ChallengeID,
     });
   };
 
@@ -22,9 +22,9 @@ const ChallengeDescription = ({ navigation, route }) => {
     <View style={styles.container}>
       {challenge && (
         <View style={styles.card}>
-          <Text style={styles.challengeText}>{challenge.challenge_name}</Text>
+          <Text style={styles.challengeText}>{challenge.ChallengeName}</Text>
           <Text style={styles.challengeDescriptionStyle}>
-            {challenge.challenge_description}
+            {challenge.Description}
           </Text>
           <TouchableOpacity
             onPress={handleJoinChallenge}

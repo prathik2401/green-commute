@@ -9,8 +9,8 @@ app.use(cors())
 const db = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'localhost123',
-  database: 'green-commute'
+  password: 'B@hsir6113',
+  database: 'green_commute'
 });
 
 // Connect
@@ -51,9 +51,9 @@ app.get('/achievements', (req, res) => {
 
 // Signup
 app.post('/signup', (req, res) => { 
-  const { username, email, password } = req.body; 
-  let sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-  db.query(sql, [username, email, password],
+  const { username,fname,lname, email, password } = req.body; 
+  let sql = 'INSERT INTO users (UserName,FirstName,LastName, Email, Password) VALUES (?,?,?,?,?)';
+  db.query(sql, [username,fname,lname, email, password],
   (err, result) => {
      if (err) throw err; console.log("User signed up...");
      res.send("User signed up successfully"); 
@@ -62,7 +62,7 @@ app.post('/signup', (req, res) => {
 
 // Get a specific challenge by ID
 app.get('/challenges/:id', (req, res) => {
-  let sql = 'SELECT challenge_name, challenge_description FROM challenges WHERE challenge_id = ?';
+  let sql = 'SELECT ChallengeName, Description FROM challenges WHERE ChallengeID = ?';
   db.query(sql, [req.params.id], (err, results) => {
     if(err) throw err;
     console.log(`Challenge ${req.params.id} fetched...`);
