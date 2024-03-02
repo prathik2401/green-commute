@@ -49,6 +49,17 @@ app.get('/achievements', (req, res) => {
   });
 });
 
+// Signup
+app.post('/signup', (req, res) => { 
+  const { username, email, password } = req.body; 
+  let sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+  db.query(sql, [username, email, password],
+  (err, result) => {
+     if (err) throw err; console.log("User signed up...");
+     res.send("User signed up successfully"); 
+    }); 
+  });
+
 app.listen('3000', () => {
   console.log('Server started on port 3000');
 });
