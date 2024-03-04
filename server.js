@@ -52,24 +52,30 @@ app.get('/achievements', (req, res) => {
 });
 
 // Signup
-app.post('/signup', (req, res) => {
-  const { UserName, FirstName, LastName, Email, Password } = req.body;
-
-  // Perform validation
+app.post('/signup', async (req, res) => {
   if (!UserName || !FirstName || !LastName || !Email || !Password) {
     return res.status(400).send('Please provide all required fields');
   }
-
-  const user = [UserName, FirstName, LastName, Email, Password];
-const sql = 'INSERT INTO users (UserName, FirstName, LastName, Email, Password) VALUES (?)';
-
-db.query(sql, [user], (err, result) => {
-  if (err) {
-    console.error(err);
-    return res.status(500).send('Server error');
+  const { UserName, FirstName, LastName, Email, Password } = req.body;
+  
+  // Check if the user already exists
+  const existingUser = await db.query('SELECT * FROM users WHERE UserName = ?', [UserName]);
+  
+  if (existingUser.length > 0) {
+    // User exists, send a 409 Conflict response
+    return res.status(409).json({ message: 'Username already exists' });
   }
-  res.send('User added to database');
-});
+  
+  const newUser = [UserName, FirstName, LastName, Email, Password];
+  const sql = 'INSERT INTO users (UserName, FirstName, LastName, Email, Password) VALUES (?)';
+  
+  db.query(sql, [newUser], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Server error');
+    }
+    res.send('User added to database');
+  });
 });
 
 app.get('/signup', (req, res) => {

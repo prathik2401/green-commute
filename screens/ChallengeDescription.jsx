@@ -6,7 +6,7 @@ const ChallengeDescription = ({ navigation, route }) => {
 
   useEffect(() => {
     const { ChallengeID } = route.params;
-    fetch(`http:// 192.168.98.192:3000/challenges/${ChallengeID}`) // Replace with your server's IP and port
+    fetch(`http:// 192.168.0.101:3000/challenges/${ChallengeID}`) // Replace with your server's IP and port
       .then((response) => response.json())
       .then((data) => setChallenge(data[0]))
       .catch((error) => console.error(error));

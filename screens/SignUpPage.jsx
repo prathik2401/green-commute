@@ -22,7 +22,7 @@ export function SignUpPage({ navigation }) {
       Email: email,
       Password: password
     };
-    const response = await fetch('http://192.168.98.192:3000/signup', {
+    const response = await fetch('http://192.168.0.101:3000/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,7 +33,17 @@ export function SignUpPage({ navigation }) {
     if (response.ok) {
       console.log("MySQL connected ")
     } else {
-      console.log("MySQL not connected")
+      if (response.status === 409) {
+        const body = await response.json();
+        console.log(body.message); // Or display this message to the user in your UI
+      }
+      
+      else if(response.status === 400){
+        console.log("Please provide all required fields")
+      }
+      else {
+        console.log("MySQL not connected")
+      }
     }
   };
   
