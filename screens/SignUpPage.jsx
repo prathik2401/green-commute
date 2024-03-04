@@ -7,36 +7,36 @@ import {
   Text,
   Image,
 } from "react-native";
-const handleSubmit = async () => {
-  const data = {
-    UserName: username,
-    FirstName: fname,
-    LastName: lname,
-    Email: email,
-    Password: password
-  };
 
-  const response = await fetch('http://localhost:5000/signup', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (response.ok) {
-    console.log("MySQL connected ")
-  } else {
-    console.log("MySQL not connected")
-  }
-};
 export function SignUpPage({ navigation }) {
   const[fname,setFname]=useState("");
   const[lname,setLname]=useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const handleSubmit = async () => {
+    const data = {
+      UserName: username,
+      FirstName: fname,
+      LastName: lname,
+      Email: email,
+      Password: password
+    };
+    const response = await fetch('http://192.168.98.192:3000/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+  
+    if (response.ok) {
+      console.log("MySQL connected ")
+    } else {
+      console.log("MySQL not connected")
+    }
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -91,7 +91,7 @@ export function SignUpPage({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={{}}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <Text style={styles.signUpText}>

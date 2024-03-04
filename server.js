@@ -3,7 +3,9 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const app = express();
 
-app.use(cors())
+app.use(cors());
+app.use(express.json());
+
 
 // Create connection
 const db = mysql.createConnection({
@@ -50,15 +52,34 @@ app.get('/achievements', (req, res) => {
 });
 
 // Signup
-app.post('/signup', (req, res) => { 
-  const { username,fname,lname, email, password } = req.body; 
-  let sql = 'INSERT INTO users (UserName,FirstName,LastName, Email, Password) VALUES (?,?,?,?,?)';
-  db.query(sql, [username,fname,lname, email, password],
-  (err, result) => {
-     if (err) throw err; console.log("User signed up...");
-     res.send("User signed up successfully"); 
-    }); 
+app.post('/signup', (req, res) => {
+  const { UserName, FirstName, LastName, Email, Password } = req.body;
+
+  // Perform validation
+  if (!UserName || !FirstName || !LastName || !Email || !Password) {
+    return res.status(400).send('Please provide all required fields');
+  }
+
+  const user = [UserName, FirstName, LastName, Email, Password];
+const sql = 'INSERT INTO users (UserName, FirstName, LastName, Email, Password) VALUES (?)';
+
+db.query(sql, [user], (err, result) => {
+  if (err) {
+    console.error(err);
+    return res.status(500).send('Server error');
+  }
+  res.send('User added to database');
+});
+});
+
+app.get('/signup', (req, res) => {
+  let sql = 'SELECT * FROM users'; // Replace 'leaderboard' with your actual leaderboard table name
+  db.query(sql, (err, results) => {
+    if(err) throw err;
+    console.log("User data fetched...");
+    res.send(results);
   });
+});
 
 // Get a specific challenge by ID
 app.get('/challenges/:id', (req, res) => {

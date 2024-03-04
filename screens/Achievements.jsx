@@ -5,7 +5,7 @@ const Achievements = () => {
   const [achievementsData, setAchievementsData] = useState([]);
 
   useEffect(() => {
-    fetch("http:// 192.168.0.101:3000/achievements") // Replace with your server's IP and endpoint
+    fetch("http:// 192.168.98.192:3000/achievements") // Replace with your server's IP and endpoint
       .then((response) => response.json())
       .then((data) => setAchievementsData(data))
       .catch((error) => console.error(error));
