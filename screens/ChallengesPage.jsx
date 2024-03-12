@@ -5,7 +5,7 @@ const Challenges = ({ navigation }) => {
   const [challenges, setChallenges] = useState([]);
 
   useEffect(() => {
-    fetch("http://192.168.0.101:3000/challenges") // Go to cmd, type ipconfig, and find the IPv4 Address for your computer. Replace it here.
+    fetch("http://192.168.29.213:3000/challenges") // Go to cmd, type ipconfig, and find the IPv4 Address for your computer. Replace it here.
       .then((response) => response.json())
       .then((data) => setChallenges(data))
       .catch((error) => console.error(error));

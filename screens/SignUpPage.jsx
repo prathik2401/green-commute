@@ -7,46 +7,57 @@ import {
   Text,
   Image,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 export function SignUpPage({ navigation }) {
-  const[fname,setFname]=useState("");
-  const[lname,setLname]=useState("");
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const handleSubmit = async () => {
     const data = {
       UserName: username,
       FirstName: fname,
       LastName: lname,
       Email: email,
-      Password: password
+      Password: password,
     };
-    const response = await fetch('http://192.168.0.101:3000/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (response.ok) {
-      console.log("MySQL connected ")
-    } else {
-      if (response.status === 409) {
-        const body = await response.json();
-        console.log(body.message); // Or display this message to the user in your UI
+    try {
+      const response = await fetch("http://192.168.29.213:3000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseText = await response.text();
+
+      if (response.ok) {
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: responseText,
+        });
+        navigation.navigate("LoginPage"); // Navigate to login page
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: responseText,
+        });
       }
-      
-      else if(response.status === 400){
-        console.log("Please provide all required fields")
-      }
-      else {
-        console.log("MySQL not connected")
-      }
+    } catch (error) {
+      console.error("Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
     }
   };
-  
 
   return (
     <View style={styles.container}>
@@ -72,7 +83,7 @@ export function SignUpPage({ navigation }) {
         onChangeText={setFname}
       />
 
-<TextInput
+      <TextInput
         style={styles.input}
         placeholder="Enter your Last Name"
         placeholderTextColor="gray"

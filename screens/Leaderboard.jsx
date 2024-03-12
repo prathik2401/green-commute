@@ -5,7 +5,7 @@ const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
-    fetch("http:// 192.168.0.101:3000/leaderboard") // Replace with your server's IP and endpoint
+    fetch("http:// 192.168.29.213:3000/leaderboard") // Replace with your server's IP and endpoint
       .then((response) => response.json())
       .then((data) => setLeaderboardData(data))
       .catch((error) => console.error(error));

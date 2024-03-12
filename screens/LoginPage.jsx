@@ -7,10 +7,53 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
-export function WelcomePage({ navigation }) {
+export function LoginPage({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    const data = {
+      Email: email,
+      Password: password,
+    };
+    try {
+      const response = await fetch("http://192.168.29.213:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseText = await response.text();
+
+      if (response.ok) {
+        Toast.show({
+          type: "success",
+          text1: "Successfully Logged In!",
+          text2: responseText,
+        });
+        navigation.navigate("HomePage"); // Navigate to home page
+      } else {
+        console.log(responseText);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: responseText,
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -43,10 +86,7 @@ export function WelcomePage({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("HomePage")}
-      >
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
       <Text style={styles.signUpText}>
