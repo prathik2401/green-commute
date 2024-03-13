@@ -5,7 +5,7 @@ const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
-    fetch("http:// 192.168.29.213:3000/leaderboard") // Replace with your server's IP and endpoint
+    fetch("http://192.168.29.213:3000/leaderboard") // Replace with your server's IP and endpoint
       .then((response) => response.json())
       .then((data) => setLeaderboardData(data))
       .catch((error) => console.error(error));
@@ -14,11 +14,21 @@ const Leaderboard = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView>
+        <Text style={styles.headingStyle}>Leaderboard</Text>
         {leaderboardData.map((entry, index) => (
-          <View key={index} style={styles.card}>
+          <View
+            key={index}
+            style={
+              index === 0
+                ? styles.cardFirst
+                : index < 10
+                ? styles.cardTop10
+                : styles.card
+            }
+          >
             <Text style={styles.rank}>{index + 1}</Text>
-            <Text style={styles.name}>{entry.user_name}</Text>
-            <Text style={styles.points}>{entry.points}</Text>
+            <Text style={styles.name}>{entry.UserName}</Text>
+            <Text style={styles.points}>{entry.TotalEcoPoints}</Text>
           </View>
         ))}
       </SafeAreaView>
@@ -30,15 +40,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    justifyContent: "center",
+    backgroundColor: "#F8F8F7",
   },
   card: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
     padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    borderRadius: 18,
+    backgroundColor: "rgba(119, 188, 63, 0.32)",
   },
   rank: {
     fontSize: 18,
@@ -48,6 +58,30 @@ const styles = StyleSheet.create({
   },
   points: {
     fontSize: 18,
+  },
+  headingStyle: {
+    fontSize: 30,
+    fontWeight: "900",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#77BC3F",
+    marginTop: 50,
+  },
+  cardTop10: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 18,
+    backgroundColor: "#77BC3F",
+  },
+  cardFirst: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 18,
+    backgroundColor: "#FFB000",
   },
 });
 

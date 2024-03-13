@@ -24,38 +24,49 @@ const db = createConnection();
 
 // Get challenges
 app.get('/challenges', async (req, res) => {
-  const dbInstance = await db;
-  let sql = 'SELECT * FROM challenges';
-  dbInstance.query(sql, (err, results) => {
-    if(err) throw err;
+  try {
+    const dbInstance = await db;
+    let sql = 'SELECT * FROM challenges';
+    const [results] = await dbInstance.query(sql);
     console.log("Challenges fetched...");
     res.send(results);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 });
 
 // Get leaderboard
 app.get('/leaderboard', async (req, res) => {
-  const dbInstance = await db;
-  let sql = 'SELECT * FROM leaderboard'; // Replace 'leaderboard' with your actual leaderboard table name
-  dbInstance.query(sql, (err, results) => {
-    if(err) throw err;
+  try {
+    const dbInstance = await db;
+    let sql = `
+      SELECT lb.*, u.UserName
+      FROM overallleaderboard AS lb
+      INNER JOIN users AS u ON lb.UserID = u.UserID
+    `;
+    const [results] = await dbInstance.query(sql);
     console.log("Leaderboard data fetched...");
     res.send(results);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 });
 
 
 // Get achievements
-app.get('/achievements', (req, res) => {
-  let sql = 'SELECT * FROM achievements'; // Replace 'leaderboard' with your actual leaderboard table name
-  db.query(sql, (err, results) => {
-    if(err) throw err;
+app.get('/achievements', async (req, res) => {
+  try {
+    let sql = 'SELECT * FROM achievements';
+    const [results] = await db.query(sql);
     console.log("Achievements data fetched...");
     res.send(results);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 });
-
-
 
 const bcrypt = require('bcrypt');
 
@@ -148,6 +159,7 @@ app.post('/login', async (req, res) => {
 
       if (match) {
         // Passwords match, send a 200 OK response
+        console.log('Login successful');
         return res.status(200).json({ message: 'Login successful' });
       } else {
         // Passwords do not match, send a 401 Unauthorized response
