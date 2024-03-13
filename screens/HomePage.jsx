@@ -9,9 +9,18 @@ import {
 import FooterNavigation from "./FooterNavigation";
 import UserComponent from "./ProfilePage";
 
-const HomePage = ({ navigation }) => {
-  const moveAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+const HomePage = ({ navigation, route }) => {
+  const moveAnim = useRef(new Animated.Value(0)).current;
   const [showUser, setShowUser] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Retrieve user information from route params when component mounts
+    if (route.params) {
+      const { UserName, FirstName, LastName, Email } = route.params;
+      setUser({ UserName, FirstName, LastName, Email });
+    }
+  }, [route.params]);
 
   const handleProfileButtonPress = () => {
     setShowUser(true);
@@ -19,21 +28,6 @@ const HomePage = ({ navigation }) => {
 
   const handleHomeButtonPress = () => {
     setShowUser(false);
-  };
-
-  useEffect(() => {
-    Animated.timing(moveAnim, {
-      toValue: -100,
-      duration: 1500,
-      useNativeDriver: true,
-    }).start();
-  }, [moveAnim]);
-
-  const user = {
-    fname: "John",
-    lname: "Doe",
-    email: "john.doe@example.com",
-    username: "johndoe",
   };
 
   return (
@@ -83,7 +77,7 @@ const HomePage = ({ navigation }) => {
           </View>
         </>
       ) : (
-        <UserComponent user={user} />
+        <UserComponent user={user} onDelete={() => {}} />
       )}
       <FooterNavigation
         navigation={navigation}
@@ -111,7 +105,7 @@ const styles = StyleSheet.create({
     fontSize: 38,
     fontWeight: "bold",
     color: "#77BC3F",
-    marginBottom: -30,
+    marginBottom: 30,
   },
   description: {
     fontSize: 16,

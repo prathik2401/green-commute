@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+
 import Toast from "react-native-toast-message";
 
 export function LoginPage({ navigation }) {
@@ -26,30 +27,27 @@ export function LoginPage({ navigation }) {
         },
         body: JSON.stringify(data),
       });
-  
-      const responseData = await response.json();
-  
+    
       if (response.ok) {
+        const { UserName, FirstName, LastName, Email } = await response.json(); // Destructure user object
         Toast.show({
           type: "success",
           text1: "Successfully Logged In!",
-          text2: responseData.message,
+          text2: "You are now logged in.", // update this message as needed
         });
-  
-        navigation.navigate('ProfilePage', {
-          UserId: responseData.user.UserId,
-          UserName: responseData.user.UserName,
-          FirstName: responseData.user.FirstName,
-          LastName: responseData.user.LastName,
-        });
-  
-        navigation.navigate("HomePage"); // Navigate to home page
+        navigation.navigate("HomePage", {
+          UserName,
+          FirstName,
+          LastName,
+          Email,
+        }); // Pass user data with corrected property names
       } else {
-        console.log(responseData.message);
+        const errorText = await response.text(); // read the response body here if the response is not ok
+        console.log(errorText);
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: responseData.message,
+          text2: errorText,
         });
       }
     } catch (error) {

@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const UserComponent = ({ user = { user }, onDelete }) => {
+const UserComponent = ({ user = {}, onDelete }) => {
   if (!user) {
     return (
       <View style={{ padding: 20 }}>
@@ -10,27 +10,7 @@ const UserComponent = ({ user = { user }, onDelete }) => {
     );
   }
 
-  const { fname, lname, email, username } = user;
-  const handleDeleteUser = () => {
-    // Send a DELETE request to the server
-    fetch(`http://192.168.0.101:3000/users/${user.id}`, { method: 'DELETE' })
-      .then(response => {
-        if (response.ok) {
-          // The user was successfully deleted
-          alert('User deleted');
-          // Here you can navigate to another screen or update the state
-        } else {
-          // The server responded with a status other than 200
-          console.error('Failed to delete user:', response);
-          alert('Failed to delete user');
-        }
-      })
-      .catch(error => {
-        // An error occurred while trying to send the request
-        console.error('Network error:', error);
-        alert('Network error');
-      });
-  };
+  const { FirstName, LastName, Email, UserName } = user;
 
   return (
     <View style={styles.container}>
@@ -46,11 +26,11 @@ const UserComponent = ({ user = { user }, onDelete }) => {
         The Green Commute
       </Text>
       <Text style={styles.headingText}>User Details</Text>
-      <Text style={styles.text}>First Name: {fname}</Text>
-      <Text style={styles.text}>Last Name: {lname}</Text>
-      <Text style={styles.text}>Username: {username}</Text>
-      <Text style={styles.text}>Email: {email}</Text>
-      <TouchableOpacity style={styles.button} onPress={handleDeleteUser}>
+      <Text style={styles.text}>First Name: {FirstName}</Text>
+      <Text style={styles.text}>Last Name: {LastName}</Text>
+      <Text style={styles.text}>Username: {UserName}</Text>
+      <Text style={styles.text}>Email: {Email}</Text>
+      <TouchableOpacity style={styles.button} onPress={onDelete}>
         <Text style={styles.buttonText}>Delete User</Text>
       </TouchableOpacity>
     </View>
