@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const Achievements = () => {
+const Achievements = ({UserId}) => {
   const [achievementsData, setAchievementsData] = useState([]);
 
   useEffect(() => {
-    fetch("http:// 192.168.29.213:3000/achievements") // Replace with your server's IP and endpoint
+    fetch(`http://192.168.0.101:3000/achievements?UserId=${UserId}`) // Replace with your server's IP and endpoint
       .then((response) => response.json())
       .then((data) => setAchievementsData(data))
       .catch((error) => console.error(error));

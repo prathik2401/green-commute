@@ -19,29 +19,37 @@ export function LoginPage({ navigation }) {
       Password: password,
     };
     try {
-      const response = await fetch("http://192.168.29.213:3000/login", {
+      const response = await fetch("http://192.168.0.101:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-
-      const responseText = await response.text();
-
+  
+      const responseData = await response.json();
+  
       if (response.ok) {
         Toast.show({
           type: "success",
           text1: "Successfully Logged In!",
-          text2: responseText,
+          text2: responseData.message,
         });
+  
+        navigation.navigate('ProfilePage', {
+          UserId: responseData.user.UserId,
+          UserName: responseData.user.UserName,
+          FirstName: responseData.user.FirstName,
+          LastName: responseData.user.LastName,
+        });
+  
         navigation.navigate("HomePage"); // Navigate to home page
       } else {
-        console.log(responseText);
+        console.log(responseData.message);
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: responseText,
+          text2: responseData.message,
         });
       }
     } catch (error) {
@@ -54,7 +62,6 @@ export function LoginPage({ navigation }) {
       });
     }
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>

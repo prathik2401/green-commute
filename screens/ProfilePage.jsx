@@ -11,6 +11,26 @@ const UserComponent = ({ user = { user }, onDelete }) => {
   }
 
   const { fname, lname, email, username } = user;
+  const handleDeleteUser = () => {
+    // Send a DELETE request to the server
+    fetch(`http://192.168.0.101:3000/users/${user.id}`, { method: 'DELETE' })
+      .then(response => {
+        if (response.ok) {
+          // The user was successfully deleted
+          alert('User deleted');
+          // Here you can navigate to another screen or update the state
+        } else {
+          // The server responded with a status other than 200
+          console.error('Failed to delete user:', response);
+          alert('Failed to delete user');
+        }
+      })
+      .catch(error => {
+        // An error occurred while trying to send the request
+        console.error('Network error:', error);
+        alert('Network error');
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -30,7 +50,7 @@ const UserComponent = ({ user = { user }, onDelete }) => {
       <Text style={styles.text}>Last Name: {lname}</Text>
       <Text style={styles.text}>Username: {username}</Text>
       <Text style={styles.text}>Email: {email}</Text>
-      <TouchableOpacity style={styles.button} onPress={onDelete}>
+      <TouchableOpacity style={styles.button} onPress={handleDeleteUser}>
         <Text style={styles.buttonText}>Delete User</Text>
       </TouchableOpacity>
     </View>
