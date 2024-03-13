@@ -160,8 +160,9 @@ app.post('/login', async (req, res) => {
       if (match) {
         // Passwords match, send a 200 OK response with user data
         console.log('Login successful');
-        const { UserName, FirstName, LastName, Email } = user[0]; // Destructure user object
-        return res.status(200).json({ UserName, FirstName, LastName, Email }); // Send user data with corrected property names
+        const { UserName, FirstName, LastName, Email, UserID } = user[0]; // Destructure user object
+        console.log(user);
+        return res.status(200).json({ UserName, FirstName, LastName, Email, UserID }); // Send user data with corrected property names
       } else {
         // Passwords do not match, send a 401 Unauthorized response
         return res.status(401).json({ message: 'Invalid password' });
@@ -170,6 +171,24 @@ app.post('/login', async (req, res) => {
       // User does not exist, send a 404 Not Found response
       return res.status(404).json({ message: 'User not found' });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Server-side route to delete user
+app.delete('/users/:id', async (req, res) => {
+  try {
+    const dbInstance = await db;
+    const userId = req.params.id;
+    
+    // Delete the user from the database
+    await dbInstance.query('DELETE FROM users WHERE UserID = ?', [userId]);
+
+    console.log(`User with ID ${userId} deleted`);
+    res.status(200).send('User deleted successfully');
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');

@@ -29,7 +29,8 @@ export function LoginPage({ navigation }) {
       });
     
       if (response.ok) {
-        const { UserName, FirstName, LastName, Email } = await response.json(); // Destructure user object
+        const { UserName, FirstName, LastName, Email, UserID } =
+          await response.json(); // Destructure user object
         Toast.show({
           type: "success",
           text1: "Successfully Logged In!",
@@ -40,6 +41,7 @@ export function LoginPage({ navigation }) {
           FirstName,
           LastName,
           Email,
+          UserID,
         }); // Pass user data with corrected property names
       } else {
         const errorText = await response.text(); // read the response body here if the response is not ok

@@ -17,8 +17,8 @@ const HomePage = ({ navigation, route }) => {
   useEffect(() => {
     // Retrieve user information from route params when component mounts
     if (route.params) {
-      const { UserName, FirstName, LastName, Email } = route.params;
-      setUser({ UserName, FirstName, LastName, Email });
+      const { UserName, FirstName, LastName, Email, UserID } = route.params;
+      setUser({ UserName, FirstName, LastName, Email, UserID });
     }
   }, [route.params]);
 
@@ -77,7 +77,11 @@ const HomePage = ({ navigation, route }) => {
           </View>
         </>
       ) : (
-        <UserComponent user={user} onDelete={() => {}} />
+        <UserComponent
+          user={user}
+          onDelete={() => {}}
+          navigation={navigation}
+        />
       )}
       <FooterNavigation
         navigation={navigation}
