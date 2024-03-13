@@ -158,9 +158,10 @@ app.post('/login', async (req, res) => {
       const match = await bcrypt.compare(Password, user[0].Password);
 
       if (match) {
-        // Passwords match, send a 200 OK response
+        // Passwords match, send a 200 OK response with user data
         console.log('Login successful');
-        return res.status(200).json({ message: 'Login successful' });
+        const { UserName, FirstName, LastName, Email } = user[0]; // Destructure user object
+        return res.status(200).json({ UserName, FirstName, LastName, Email }); // Send user data with corrected property names
       } else {
         // Passwords do not match, send a 401 Unauthorized response
         return res.status(401).json({ message: 'Invalid password' });

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const UserComponent = ({ user = { user }, onDelete }) => {
+const UserComponent = ({ user = {}, onDelete }) => {
   if (!user) {
     return (
       <View style={{ padding: 20 }}>
@@ -10,7 +10,7 @@ const UserComponent = ({ user = { user }, onDelete }) => {
     );
   }
 
-  const { fname, lname, email, username } = user;
+  const { FirstName, LastName, Email, UserName } = user;
 
   return (
     <View style={styles.container}>
@@ -26,10 +26,10 @@ const UserComponent = ({ user = { user }, onDelete }) => {
         The Green Commute
       </Text>
       <Text style={styles.headingText}>User Details</Text>
-      <Text style={styles.text}>First Name: {fname}</Text>
-      <Text style={styles.text}>Last Name: {lname}</Text>
-      <Text style={styles.text}>Username: {username}</Text>
-      <Text style={styles.text}>Email: {email}</Text>
+      <Text style={styles.text}>First Name: {FirstName}</Text>
+      <Text style={styles.text}>Last Name: {LastName}</Text>
+      <Text style={styles.text}>Username: {UserName}</Text>
+      <Text style={styles.text}>Email: {Email}</Text>
       <TouchableOpacity style={styles.button} onPress={onDelete}>
         <Text style={styles.buttonText}>Delete User</Text>
       </TouchableOpacity>

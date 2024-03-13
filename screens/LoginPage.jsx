@@ -29,13 +29,18 @@ export function LoginPage({ navigation }) {
       });
     
       if (response.ok) {
-        const user = await response.json(); // read the response body here
+        const { UserName, FirstName, LastName, Email } = await response.json(); // Destructure user object
         Toast.show({
           type: "success",
           text1: "Successfully Logged In!",
           text2: "You are now logged in.", // update this message as needed
         });
-        navigation.navigate("HomePage", { user }); // Navigate to home page
+        navigation.navigate("HomePage", {
+          UserName,
+          FirstName,
+          LastName,
+          Email,
+        }); // Pass user data with corrected property names
       } else {
         const errorText = await response.text(); // read the response body here if the response is not ok
         console.log(errorText);
