@@ -247,31 +247,34 @@ app.post('/joinChallenge', async (req, res) => {
 });
 
 
-// Route to mark a challenge as completed for a user
 app.post('/completeChallenge', async (req, res) => {
-  const { UserID, Challenge_ID } = req.body;
-  
-  console.log(`Received request to complete challenge ${Challenge_ID} for user ${UserID}`);
-
   try {
-    const dbInstance = await createConnection();
+    const { UserID, Challenge_ID } = req.body;
+    const dbInstance = await createConnection(); // Initialize dbInstance
     
-    // Execute the UpdateEcoPoints stored procedure
+    await dbInstance.beginTransaction(); // Begin transaction
+    
+    // Update TripCompleted value to 1 (completed) for the specific challenge and user
+    const updateTripSql = 'UPDATE trips SET TripCompleted = 1 WHERE UserID = ? AND Challenge_ID = ?';
+    await dbInstance.query(updateTripSql, [UserID, Challenge_ID]);
+    
+    // Execute stored procedure to update leaderboard
     const updateSql = 'CALL UpdateOverallLeaderboard(?)';
-    await dbInstance.query(updateSql, [UserID]);
+    await dbInstance.query(updateSql, [UserID]); // Call stored procedure with UserID
     
-    // Delete the row from the database table
-    const deleteSql = 'DELETE FROM trips WHERE UserID = ? AND Challenge_ID = ?';
-    await dbInstance.query(deleteSql, [UserID, Challenge_ID]);
+    // Commit transaction
+    await dbInstance.commit();
     
     console.log(`Challenge ${Challenge_ID} completed for user with ID ${UserID}`);
-    
     res.status(200).send('Challenge marked as completed successfully');
   } catch (error) {
+    // Rollback transaction on error
+    await dbInstance.rollback();
+    
     console.error(error);
     res.status(500).send('Server error');
   }
-}); 
+});
 
 
 // Get challenges for a specific user
@@ -280,16 +283,24 @@ app.get('/userChallenges', async (req, res) => {
     const { UserID } = req.query;
     const dbInstance = await createConnection();
     let sql = `
-      SELECT c.*
+      SELECT c.*, t.TripCompleted
       FROM challenges c
       INNER JOIN trips t ON c.Challenge_ID = t.Challenge_ID
       WHERE t.UserID = ?
     `;
     const [results] = await dbInstance.query(sql, [UserID]);
     console.log(`Challenges fetched for user ${UserID}`);
-    res.send(results);
+    
+    // Check TripCompleted value and update completed flag accordingly
+    const challenges = results.map(challenge => ({
+      ...challenge,
+      completed: challenge.TripCompleted === 1
+    }));
+
+    res.send(challenges);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
   }
 });
+

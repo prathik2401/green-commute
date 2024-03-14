@@ -22,8 +22,8 @@ const Achievements = ({ userID }) => {
 
   return (
     <View style={styles.container}>
-      {achievementsData.map((achievement) => (
-        <View key={achievement.id} style={styles.card}>
+      {achievementsData.map((achievement, index) => (
+        <View key={index} style={styles.card}>
           <Text style={styles.title}>{achievement.BadgeID}</Text>
           <Text style={styles.description}>{achievement.UserID}</Text>
         </View>

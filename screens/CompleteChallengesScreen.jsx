@@ -120,7 +120,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
                   ? { backgroundColor: "#FF5733" }
                   : { backgroundColor: "#77BC3F" },
               ]}
-              disabled={challenge.completed}
+              disabled={challenge.completed} // Disable button if challenge is already completed
             >
               <Text style={styles.challengeButtonText}>
                 {challenge.completed ? "Completed" : "Complete"}

@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-
+import { CommonActions } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 
 export function LoginPage({ navigation }) {
@@ -27,7 +27,7 @@ export function LoginPage({ navigation }) {
         },
         body: JSON.stringify(data),
       });
-    
+
       if (response.ok) {
         const { UserName, FirstName, LastName, Email, UserID } =
           await response.json(); // Destructure user object
@@ -36,13 +36,17 @@ export function LoginPage({ navigation }) {
           text1: "Successfully Logged In!",
           text2: "You are now logged in.", // update this message as needed
         });
-        navigation.navigate("HomePage", {
-          UserName,
-          FirstName,
-          LastName,
-          Email,
-          UserID,
-        }); // Pass user data with corrected property names
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              {
+                name: "HomePage",
+                params: { UserName, FirstName, LastName, Email, UserID },
+              },
+            ],
+          })
+        );
       } else {
         const errorText = await response.text(); // read the response body here if the response is not ok
         console.log(errorText);

@@ -16,12 +16,6 @@ const FooterNavigation = ({
           style={{ width: 30, textAlign: "center" }}
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.footerButton}
-        onPress={() => navigation.navigate("Challenges")}
-      >
-        <Entypo name="bar-graph" size={24} color="white" />
-      </TouchableOpacity>
       <TouchableOpacity style={styles.footerButton} onPress={onUserButtonPress}>
         <AntDesign name="user" size={24} color="white" />
       </TouchableOpacity>
