@@ -1,36 +1,26 @@
-// Import necessary components
 import React, { useState } from "react";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-} from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
-// Define the CommutePlanner component
 const CommutePlanner = ({ navigation }) => {
-  const [startLocation, setStartLocation] = useState("");
-  const [destination, setDestination] = useState("");
+  const [transportMode, setTransportMode] = useState("bicycle");
 
   const handlePlanCommute = () => {
-    navigation.navigate("HomePage", { startLocation, destination }); //Have to implement a screen for this
+    navigation.navigate("HomePage", { transportMode });
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your starting location"
-        value={startLocation}
-        onChangeText={setStartLocation}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your destination"
-        value={destination}
-        onChangeText={setDestination}
-      />
+      <Picker
+        selectedValue={transportMode}
+        onValueChange={(itemValue) => setTransportMode(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Bicycle" value="bicycle" />
+        <Picker.Item label="Walking/Running" value="walking" />
+        <Picker.Item label="Public Transport" value="publicTransport" />
+        <Picker.Item label="Carpool" value="carpool" />
+      </Picker>
       <TouchableOpacity style={styles.button} onPress={handlePlanCommute}>
         <Text style={styles.buttonText}>Create Commute</Text>
       </TouchableOpacity>
@@ -38,22 +28,18 @@ const CommutePlanner = ({ navigation }) => {
   );
 };
 
-// Define the styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
-  input: {
-    color: "black",
+  picker: {
     width: "80%",
     height: 50,
-    borderRadius: 10,
     marginBottom: 30,
-    paddingHorizontal: 15,
     backgroundColor: "rgba(119, 188, 63, 0.32)",
-    fontSize: 16,
   },
   button: {
     backgroundColor: "#77BC3F",
@@ -68,5 +54,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Export the component
 export default CommutePlanner;

@@ -15,7 +15,7 @@ const UserComponent = ({ user = {}, onDelete, navigation }) => {
     try {
       setLoading(true);
       // Send DELETE request to server to delete the user
-      await axios.delete(`http://192.168.29.213:3000/users/${user.UserID}`);
+      await axios.delete(`http://192.168.58.128:3000/users/${user.UserID}`);
       setLoading(false);
       // Display toast message
       ToastAndroid.show("User deleted successfully", ToastAndroid.SHORT);

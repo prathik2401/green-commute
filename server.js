@@ -9,7 +9,7 @@ app.use(express.json());
 
 async function createConnection() {
   // Create connection
-  const db = await mysql.createPool({
+  const db = await mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
     password: 'B@hsir6113',
@@ -55,18 +55,22 @@ app.get('/leaderboard', async (req, res) => {
 });
 
 
-// Get achievements
-app.get('/achievements', async (req, res) => {
+// Get achievements for a specific user
+app.get('/achievements/:userId', async (req, res) => {
   try {
-    let sql = 'SELECT * FROM achievements';
-    const [results] = await db.query(sql);
-    console.log("Achievements data fetched...");
+    const userId = req.params.userId;
+    const dbInstance = await db;
+    let sql = 'SELECT * FROM userbadge WHERE UserID = ?';
+    const [results] = await dbInstance.query(sql, [userId]);
+    console.log(`Achievements fetched for user ${userId}`);
     res.send(results);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
   }
 });
+
+
 
 const bcrypt = require('bcrypt');
 
@@ -122,16 +126,23 @@ app.get('/users/:id', (req, res) => {
   });
 });
 
-
 // Get a specific challenge by ID
-app.get('/challenges/:id', (req, res) => {
-  let sql = 'SELECT ChallengeName, Description FROM challenges WHERE ChallengeID = ?';
-  db.query(sql, [req.params.id], (err, results) => {
-    if(err) throw err;
+app.get('/challenges/:id', async (req, res) => {
+  try {
+    // Ensure the database connection is established before querying
+    const dbInstance = await db;
+    
+    let sql = 'SELECT ChallengeName, Description FROM challenges WHERE Challenge_ID = ?';
+    const [results] = await dbInstance.query(sql, [req.params.id]);
+    
     console.log(`Challenge ${req.params.id} fetched...`);
     res.send(results);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 });
+
 
 app.listen('3000', () => {
   console.log('Server started on port 3000');
@@ -194,3 +205,44 @@ app.delete('/users/:id', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
+// Route to handle updating EcoPoints when a button is clicked
+app.post('/completeTrip/:userID', async (req, res) => {
+  const userID = req.params.userID;
+  
+  try {
+    const connection = await createConnection();
+    
+    // Call the stored procedure to update EcoPoints for the user
+    await connection.query('CALL UpdateEcoPoints(?)', [userID]);
+    
+    connection.end(); // Close the connection after executing the query
+    
+    console.log(`EcoPoints updated for user with ID ${userID}`);
+    res.status(200).send('EcoPoints updated successfully');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+// Route to join a challenge
+app.post('/joinChallenge', async (req, res) => {
+  try {
+    const { Challenge_ID, UserID } = req.body;
+    console.log('Received join challenge request:', req.body); // Log the received data
+    const dbInstance = await db;
+    
+    // Insert the Challenge_ID and UserID into the trips table
+    const sql = 'INSERT INTO trips (Challenge_ID, UserID) VALUES (?, ?)';
+    await dbInstance.query(sql, [Challenge_ID, UserID]);
+    
+    console.log(`User with ID ${UserID} joined challenge with ID ${Challenge_ID}`);
+    res.status(200).send('User joined challenge successfully');
+  } catch (error) {
+    console.error('Error joining challenge:', error); // Log any errors that occur
+    res.status(500).send('Server error');
+  }
+});
+

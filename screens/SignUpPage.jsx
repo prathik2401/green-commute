@@ -25,7 +25,7 @@ export function SignUpPage({ navigation }) {
       Password: password,
     };
     try {
-      const response = await fetch("http://192.168.29.213:3000/signup", {
+      const response = await fetch("http://192.168.58.128:3000/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
