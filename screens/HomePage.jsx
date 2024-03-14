@@ -8,16 +8,15 @@ import {
 } from "react-native";
 import FooterNavigation from "./FooterNavigation";
 import UserComponent from "./ProfilePage";
-import Achievements from "./Achievements"; // Import the Achievements component
+import Achievements from "./Achievements";
 
 const HomePage = ({ navigation, route }) => {
   const moveAnim = useRef(new Animated.Value(0)).current;
   const [showUser, setShowUser] = useState(false);
   const [user, setUser] = useState(null);
-  const [showAchievements, setShowAchievements] = useState(false); // State to manage whether to show achievements or not
+  const [showAchievements, setShowAchievements] = useState(false);
 
   useEffect(() => {
-    // Retrieve user information from route params when component mounts
     if (route.params) {
       const { UserName, FirstName, LastName, Email, UserID } = route.params;
       setUser({ UserName, FirstName, LastName, Email, UserID });
@@ -34,13 +33,12 @@ const HomePage = ({ navigation, route }) => {
   };
 
   const handleAchievementsButtonPress = () => {
-    setShowAchievements(true); // Set showAchievements to true when Achievements button is pressed
+    setShowAchievements(true);
   };
 
-  // In the HomePage component where you navigate to the Challenges component
   const handleJoinChallenge = () => {
     navigation.navigate("Challenges", {
-      UserID: user?.UserID, // Pass the UserID of the logged-in user
+      UserID: user?.UserID,
     });
   };
 
@@ -64,9 +62,13 @@ const HomePage = ({ navigation, route }) => {
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.longbutton}
-              onPress={() => navigation.navigate("CommutePlannerPage")}
+              onPress={() =>
+                navigation.navigate("CompletedChallengesScreen", {
+                  UserID: user?.UserID,
+                })
+              }
             >
-              <Text style={styles.buttonText}>Plan Your Commute</Text>
+              <Text style={styles.buttonText}>Track Your Progress</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.shortbutton}
@@ -78,7 +80,7 @@ const HomePage = ({ navigation, route }) => {
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.bottomshortbutton}
-              onPress={handleAchievementsButtonPress} // Add onPress handler for Achievements button
+              onPress={handleAchievementsButtonPress}
             >
               <Text style={styles.buttonText}>Achievements</Text>
             </TouchableOpacity>
@@ -94,10 +96,10 @@ const HomePage = ({ navigation, route }) => {
         <UserComponent
           user={user}
           onDelete={() => {}}
-          navigation={navigation}
+          navigation={navigation} // Pass the navigation prop to UserComponent
         />
       ) : (
-        <Achievements userID={user?.UserID} /> // Render Achievements component when showAchievements is true
+        <Achievements userID={user?.UserID} />
       )}
       <FooterNavigation
         navigation={navigation}

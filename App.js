@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginPage } from './screens/LoginPage';
 import { SignUpPage } from './screens/SignUpPage';
 import HomePage from './screens/HomePage';
-import CommutePlanner from './screens/CommutePlanner';
+import  CompletedChallengesScreen  from './screens/CompleteChallengesScreen';
 import UserComponent from './screens/ProfilePage';
 import Challenges from './screens/ChallengesPage';
 import Leaderboard from './screens/Leaderboard';
@@ -21,7 +21,7 @@ export default function App() {
         <Stack.Screen name='LoginPage' component={LoginPage}/>
         <Stack.Screen name='SignupPage' component={SignUpPage}/>
         <Stack.Screen name='HomePage' component={HomePage}/>
-        <Stack.Screen name='CommutePlannerPage' component={CommutePlanner}/>
+        <Stack.Screen name='CompletedChallengesScreen' component={CompletedChallengesScreen}/>
         <Stack.Screen name='ProfilePage' component={UserComponent}/>
         <Stack.Screen name='Challenges' component={Challenges}/>
         <Stack.Screen name='Leaderboard' component={Leaderboard}/>

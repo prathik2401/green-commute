@@ -1,11 +1,11 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
 
 async function createConnection() {
   // Create connection
@@ -20,12 +20,10 @@ async function createConnection() {
   return db;
 }
 
-const db = createConnection();
-
 // Get challenges
 app.get('/challenges', async (req, res) => {
   try {
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
     let sql = 'SELECT * FROM challenges';
     const [results] = await dbInstance.query(sql);
     console.log("Challenges fetched...");
@@ -39,7 +37,7 @@ app.get('/challenges', async (req, res) => {
 // Get leaderboard
 app.get('/leaderboard', async (req, res) => {
   try {
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
     let sql = `
       SELECT lb.*, u.UserName
       FROM overallleaderboard AS lb
@@ -59,7 +57,7 @@ app.get('/leaderboard', async (req, res) => {
 app.get('/achievements/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
     let sql = 'SELECT * FROM userbadge WHERE UserID = ?';
     const [results] = await dbInstance.query(sql, [userId]);
     console.log(`Achievements fetched for user ${userId}`);
@@ -69,10 +67,6 @@ app.get('/achievements/:userId', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-
-
-const bcrypt = require('bcrypt');
 
 // Signup
 app.post('/signup', async (req, res) => {
@@ -115,9 +109,8 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-
 // Get a specific user by ID
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', async (req, res) => {
   let sql = 'SELECT UserName, FirstName, LastName, Email FROM users WHERE UserID = ?';
   db.query(sql, [req.params.id], (err, results) => {
     if(err) throw err;
@@ -130,7 +123,7 @@ app.get('/users/:id', (req, res) => {
 app.get('/challenges/:id', async (req, res) => {
   try {
     // Ensure the database connection is established before querying
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
     
     let sql = 'SELECT ChallengeName, Description FROM challenges WHERE Challenge_ID = ?';
     const [results] = await dbInstance.query(sql, [req.params.id]);
@@ -148,7 +141,6 @@ app.listen('3000', () => {
   console.log('Server started on port 3000');
 });
 
-
 // Login
 app.post('/login', async (req, res) => {
   const { Email, Password } = req.body;
@@ -159,7 +151,7 @@ app.post('/login', async (req, res) => {
 
   try {
     // Get database connection from the pool
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
 
     // Check if the user exists
     const [user] = await dbInstance.query('SELECT * FROM users WHERE Email = ?', [Email]);
@@ -188,11 +180,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
 // Server-side route to delete user
 app.delete('/users/:id', async (req, res) => {
   try {
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
     const userId = req.params.id;
     
     // Delete the user from the database
@@ -205,7 +196,6 @@ app.delete('/users/:id', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
 
 // Route to handle updating EcoPoints when a button is clicked
 app.post('/completeTrip/:userID', async (req, res) => {
@@ -232,11 +222,21 @@ app.post('/joinChallenge', async (req, res) => {
   try {
     const { Challenge_ID, UserID } = req.body;
     console.log('Received join challenge request:', req.body); // Log the received data
-    const dbInstance = await db;
+    const dbInstance = await createConnection();
     
     // Insert the Challenge_ID and UserID into the trips table
-    const sql = 'INSERT INTO trips (Challenge_ID, UserID) VALUES (?, ?)';
-    await dbInstance.query(sql, [Challenge_ID, UserID]);
+    const sqlInsertTrip = 'INSERT INTO trips (Challenge_ID, UserID) VALUES (?, ?);';
+    await dbInstance.query(sqlInsertTrip, [Challenge_ID, UserID]);
+
+    // Check if the user already exists in the overallleaderboard
+    const sqlCheckUser = 'SELECT * FROM overallleaderboard WHERE UserID = ?;';
+    const [userRows] = await dbInstance.query(sqlCheckUser, [UserID]);
+
+    // If the user doesn't exist in the overallleaderboard, insert them with TotalEcoPoints set to 0
+    if (userRows.length === 0) {
+      const sqlInsertUser = 'INSERT INTO overallleaderboard (UserID, TotalEcoPoints) VALUES (?, 0);';
+      await dbInstance.query(sqlInsertUser, [UserID]);
+    }
     
     console.log(`User with ID ${UserID} joined challenge with ID ${Challenge_ID}`);
     res.status(200).send('User joined challenge successfully');
@@ -246,3 +246,50 @@ app.post('/joinChallenge', async (req, res) => {
   }
 });
 
+
+// Route to mark a challenge as completed for a user
+app.post('/completeChallenge', async (req, res) => {
+  const { UserID, Challenge_ID } = req.body;
+  
+  console.log(`Received request to complete challenge ${Challenge_ID} for user ${UserID}`);
+
+  try {
+    const dbInstance = await createConnection();
+    
+    // Execute the UpdateEcoPoints stored procedure
+    const updateSql = 'CALL UpdateOverallLeaderboard(?)';
+    await dbInstance.query(updateSql, [UserID]);
+    
+    // Delete the row from the database table
+    const deleteSql = 'DELETE FROM trips WHERE UserID = ? AND Challenge_ID = ?';
+    await dbInstance.query(deleteSql, [UserID, Challenge_ID]);
+    
+    console.log(`Challenge ${Challenge_ID} completed for user with ID ${UserID}`);
+    
+    res.status(200).send('Challenge marked as completed successfully');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+}); 
+
+
+// Get challenges for a specific user
+app.get('/userChallenges', async (req, res) => {
+  try {
+    const { UserID } = req.query;
+    const dbInstance = await createConnection();
+    let sql = `
+      SELECT c.*
+      FROM challenges c
+      INNER JOIN trips t ON c.Challenge_ID = t.Challenge_ID
+      WHERE t.UserID = ?
+    `;
+    const [results] = await dbInstance.query(sql, [UserID]);
+    console.log(`Challenges fetched for user ${UserID}`);
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});

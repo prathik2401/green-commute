@@ -1,17 +1,66 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Challenges = ({ navigation, route }) => {
   const [challenges, setChallenges] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { UserID } = route.params; // Retrieve UserID from route.params
 
   useEffect(() => {
-    // Retrieve challenges data when the component mounts
-    fetch("http://192.168.58.128:3000/challenges")
-      .then((response) => response.json())
-      .then((data) => setChallenges(data))
-      .catch((error) => console.error(error));
+    const fetchChallenges = async () => {
+      try {
+        const response = await fetch("http://192.168.58.128:3000/challenges");
+        if (response.ok) {
+          const data = await response.json();
+          setChallenges(data);
+        } else {
+          console.error("Failed to fetch challenges:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching challenges:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChallenges();
   }, []);
+
+  useEffect(() => {
+    const loadCompletedChallenges = async () => {
+      try {
+        const completedChallenges = await AsyncStorage.getItem(
+          "completedChallenges"
+        );
+        if (completedChallenges !== null) {
+          const parsedChallenges = JSON.parse(completedChallenges);
+          // Update the completed state of challenges in the local state
+          setChallenges((prevChallenges) =>
+            prevChallenges.map((challenge) => ({
+              ...challenge,
+              completed: parsedChallenges.includes(challenge.Challenge_ID),
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error loading completed challenges:", error);
+      }
+    };
+
+    loadCompletedChallenges();
+  }, []);
+
+  const saveCompletedChallenges = async (completedChallenges) => {
+    try {
+      await AsyncStorage.setItem(
+        "completedChallenges",
+        JSON.stringify(completedChallenges)
+      );
+    } catch (error) {
+      console.error("Error saving completed challenges:", error);
+    }
+  };
 
   const handleJoinChallenge = async (Challenge_ID) => {
     console.log(UserID); // Logging UserID to verify it's available
@@ -39,12 +88,35 @@ const Challenges = ({ navigation, route }) => {
         return;
       }
 
+      // Update the completed state of the challenge in the local state
+      setChallenges((prevChallenges) =>
+        prevChallenges.map((challenge) =>
+          challenge.Challenge_ID === Challenge_ID
+            ? { ...challenge, completed: true }
+            : challenge
+        )
+      );
+
+      // Save the updated completed challenges to AsyncStorage
+      const updatedCompletedChallenges = challenges
+        .filter((challenge) => challenge.completed)
+        .map((challenge) => challenge.Challenge_ID);
+      saveCompletedChallenges(updatedCompletedChallenges);
+
       // Navigate to the Congratulations page upon successful completion
       navigation.navigate("Congratulations");
     } catch (error) {
       console.error("Error joining challenge:", error);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -59,9 +131,17 @@ const Challenges = ({ navigation, route }) => {
           </View>
           <TouchableOpacity
             onPress={() => handleJoinChallenge(challenge.Challenge_ID)}
-            style={styles.challengeButton}
+            style={[
+              styles.challengeButton,
+              setTimeout(() => {
+                challenge.completed && { backgroundColor: "red" };
+              }, 1000),
+            ]}
+            disabled={challenge.completed}
           >
-            <Text style={styles.challengeButtonText}>Join</Text>
+            <Text style={styles.challengeButtonText}>
+              {challenge.completed ? "Joining" : "Join"}
+            </Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -109,14 +189,13 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   challengeButton: {
-    backgroundColor: "#77BC3F",
     paddingVertical: 5, // Adjusted padding vertically
     paddingHorizontal: 20, // Adjusted padding horizontally
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#77BC3F", // Green color
   },
-
   challengeButtonText: {
     textAlign: "center",
     color: "#fff",
