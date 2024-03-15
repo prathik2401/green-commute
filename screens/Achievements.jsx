@@ -3,17 +3,20 @@ import { View, Text, StyleSheet } from "react-native";
 
 const Achievements = ({ userID }) => {
   const [achievementsData, setAchievementsData] = useState([]);
-
+  console.log(userID);
   useEffect(() => {
     const fetchAchievements = async () => {
       try {
         const response = await fetch(
-          `http://192.168.58.128:3000/achievements/${userID}`
+          `http://192.168.58.128:3000/userbadge/${userID}`
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
         setAchievementsData(data);
       } catch (error) {
-        console.error(error);
+        console.error("Fetch error:", error);
       }
     };
 
@@ -24,8 +27,8 @@ const Achievements = ({ userID }) => {
     <View style={styles.container}>
       {achievementsData.map((achievement, index) => (
         <View key={index} style={styles.card}>
-          <Text style={styles.title}>{achievement.BadgeID}</Text>
-          <Text style={styles.description}>{achievement.UserID}</Text>
+          <Text style={styles.title}>{achievement.BadgeName}</Text>
+          <Text style={styles.description}>{achievement.Description}</Text>
         </View>
       ))}
     </View>

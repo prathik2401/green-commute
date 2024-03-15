@@ -248,10 +248,11 @@ app.post('/joinChallenge', async (req, res) => {
 
 
 app.post('/completeChallenge', async (req, res) => {
+  let dbInstance; // Declare dbInstance outside the try-catch block
   try {
     const { UserID, Challenge_ID } = req.body;
-    const dbInstance = await createConnection(); // Initialize dbInstance
-    
+    dbInstance = await createConnection(); // Initialize dbInstance
+    console.log(UserID, Challenge_ID);
     await dbInstance.beginTransaction(); // Begin transaction
     
     // Update TripCompleted value to 1 (completed) for the specific challenge and user
@@ -262,6 +263,10 @@ app.post('/completeChallenge', async (req, res) => {
     const updateSql = 'CALL UpdateOverallLeaderboard(?)';
     await dbInstance.query(updateSql, [UserID]); // Call stored procedure with UserID
     
+    // Insert badge into userbadge table
+    const insertBadgeSql = 'INSERT INTO userbadge values (?, ?)';
+    await dbInstance.query(insertBadgeSql, [UserID, Challenge_ID]);
+    
     // Commit transaction
     await dbInstance.commit();
     
@@ -269,12 +274,15 @@ app.post('/completeChallenge', async (req, res) => {
     res.status(200).send('Challenge marked as completed successfully');
   } catch (error) {
     // Rollback transaction on error
-    await dbInstance.rollback();
-    
+    if (dbInstance) {
+      await dbInstance.rollback();
+    }
     console.error(error);
     res.status(500).send('Server error');
   }
 });
+
+
 
 
 // Get challenges for a specific user

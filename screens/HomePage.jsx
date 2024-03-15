@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  BackHandler,
 } from "react-native";
 import FooterNavigation from "./FooterNavigation";
 import UserComponent from "./ProfilePage";
@@ -16,19 +15,6 @@ const HomePage = ({ navigation, route }) => {
   const [showUser, setShowUser] = useState(false);
   const [user, setUser] = useState(null);
   const [showAchievements, setShowAchievements] = useState(false);
-
-  useEffect(() => {
-    const backAction = () => {
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
 
   useEffect(() => {
     if (route.params) {
