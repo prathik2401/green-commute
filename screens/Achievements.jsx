@@ -27,7 +27,8 @@ const Achievements = ({ userID }) => {
     <View style={styles.container}>
       {achievementsData.map((achievement, index) => (
         <View key={index} style={styles.card}>
-          <Text style={styles.title}>{achievement.BadgeName}</Text>
+          <Text style={styles.title}>You Completed!</Text>
+          <Text style={styles.BadgeTitle}>{achievement.BadgeName}</Text>
           <Text style={styles.description}>{achievement.Description}</Text>
         </View>
       ))}
@@ -53,6 +54,10 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
+  },
+  BadgeTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
   },
 });
 

@@ -40,7 +40,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
     fetchUserChallenges();
   }, [UserID]);
 
-  const handleJoinChallenge = async (Challenge_ID) => {
+  const handleJoinChallenge = async (ChallengeID) => {
     try {
       const response = await fetch(
         "http://192.168.58.128:3000/completeChallenge",
@@ -50,7 +50,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            Challenge_ID: Challenge_ID,
+            ChallengeID: ChallengeID,
             UserID: UserID,
           }),
         }
@@ -62,7 +62,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
       }
 
       const updatedChallenges = challenges.map((challenge) =>
-        challenge.Challenge_ID === Challenge_ID
+        challenge.ChallengeID === ChallengeID
           ? { ...challenge, completed: true }
           : challenge
       );
@@ -70,7 +70,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
 
       const updatedCompletedChallenges = updatedChallenges
         .filter((challenge) => challenge.completed)
-        .map((challenge) => challenge.Challenge_ID);
+        .map((challenge) => challenge.ChallengeID);
       saveCompletedChallenges(updatedCompletedChallenges);
       navigation.navigate("HomePage");
     } catch (error) {
@@ -102,7 +102,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Enrolled Challenges</Text>
         {challenges.map((challenge, index) => (
-          <View key={`${challenge.Challenge_ID}-${index}`} style={styles.card}>
+          <View key={`${challenge.ChallengeID}-${index}`} style={styles.card}>
             <View style={styles.challengeInfo}>
               <Text style={styles.challengeText}>
                 {challenge.ChallengeName}
@@ -113,7 +113,7 @@ const CompletedChallengesScreen = ({ navigation, route }) => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => handleJoinChallenge(challenge.Challenge_ID)}
+              onPress={() => handleJoinChallenge(challenge.ChallengeID)}
               style={[
                 styles.challengeButton,
                 challenge.completed

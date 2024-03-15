@@ -39,7 +39,7 @@ const Challenges = ({ navigation, route }) => {
           setChallenges((prevChallenges) =>
             prevChallenges.map((challenge) => ({
               ...challenge,
-              completed: parsedChallenges.includes(challenge.Challenge_ID),
+              completed: parsedChallenges.includes(challenge.ChallengeID),
             }))
           );
         }
@@ -62,7 +62,7 @@ const Challenges = ({ navigation, route }) => {
     }
   };
 
-  const handleJoinChallenge = async (Challenge_ID) => {
+  const handleJoinChallenge = async (ChallengeID) => {
     console.log(UserID); // Logging UserID to verify it's available
     try {
       if (!UserID) {
@@ -77,7 +77,7 @@ const Challenges = ({ navigation, route }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          Challenge_ID: Challenge_ID,
+          ChallengeID: ChallengeID,
           UserID: UserID, // Pass UserID to the POST request body
         }),
       });
@@ -91,7 +91,7 @@ const Challenges = ({ navigation, route }) => {
       // Update the completed state of the challenge in the local state
       setChallenges((prevChallenges) =>
         prevChallenges.map((challenge) =>
-          challenge.Challenge_ID === Challenge_ID
+          challenge.ChallengeID === ChallengeID
             ? { ...challenge, completed: true }
             : challenge
         )
@@ -100,7 +100,7 @@ const Challenges = ({ navigation, route }) => {
       // Save the updated completed challenges to AsyncStorage
       const updatedCompletedChallenges = challenges
         .filter((challenge) => challenge.completed)
-        .map((challenge) => challenge.Challenge_ID);
+        .map((challenge) => challenge.ChallengeID);
       saveCompletedChallenges(updatedCompletedChallenges);
 
       // Navigate to the Congratulations page upon successful completion
@@ -121,7 +121,7 @@ const Challenges = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       {challenges.map((challenge) => (
-        <View key={challenge.Challenge_ID} style={styles.card}>
+        <View key={challenge.ChallengeID} style={styles.card}>
           <View style={styles.challengeInfo}>
             <Text style={styles.challengeText}>{challenge.ChallengeName}</Text>
             <Text style={styles.description}>{challenge.Description}</Text>
@@ -130,7 +130,7 @@ const Challenges = ({ navigation, route }) => {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => handleJoinChallenge(challenge.Challenge_ID)}
+            onPress={() => handleJoinChallenge(challenge.ChallengeID)}
             style={[
               styles.challengeButton,
               setTimeout(() => {

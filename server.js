@@ -20,6 +20,10 @@ async function createConnection() {
   return db;
 }
 
+app.listen('3000', () => {
+  console.log('Server started on port 3000');
+});
+
 // Get challenges
 app.get('/challenges', async (req, res) => {
   try {
@@ -125,7 +129,7 @@ app.get('/challenges/:id', async (req, res) => {
     // Ensure the database connection is established before querying
     const dbInstance = await createConnection();
     
-    let sql = 'SELECT ChallengeName, Description FROM challenges WHERE Challenge_ID = ?';
+    let sql = 'SELECT ChallengeName, Description FROM challenges WHERE ChallengeID = ?';
     const [results] = await dbInstance.query(sql, [req.params.id]);
     
     console.log(`Challenge ${req.params.id} fetched...`);
@@ -134,11 +138,6 @@ app.get('/challenges/:id', async (req, res) => {
     console.error(err);
     res.status(500).send('Server error');
   }
-});
-
-
-app.listen('3000', () => {
-  console.log('Server started on port 3000');
 });
 
 // Login
@@ -220,13 +219,13 @@ app.post('/completeTrip/:userID', async (req, res) => {
 // Route to join a challenge
 app.post('/joinChallenge', async (req, res) => {
   try {
-    const { Challenge_ID, UserID } = req.body;
+    const { ChallengeID, UserID } = req.body;
     console.log('Received join challenge request:', req.body); // Log the received data
     const dbInstance = await createConnection();
     
-    // Insert the Challenge_ID and UserID into the trips table
-    const sqlInsertTrip = 'INSERT INTO trips (Challenge_ID, UserID) VALUES (?, ?);';
-    await dbInstance.query(sqlInsertTrip, [Challenge_ID, UserID]);
+    // Insert the ChallengeID and UserID into the trips table
+    const sqlInsertTrip = 'INSERT INTO trips (ChallengeID, UserID) VALUES (?, ?);';
+    await dbInstance.query(sqlInsertTrip, [ChallengeID, UserID]);
 
     // Check if the user already exists in the overallleaderboard
     const sqlCheckUser = 'SELECT * FROM overallleaderboard WHERE UserID = ?;';
@@ -238,7 +237,7 @@ app.post('/joinChallenge', async (req, res) => {
       await dbInstance.query(sqlInsertUser, [UserID]);
     }
     
-    console.log(`User with ID ${UserID} joined challenge with ID ${Challenge_ID}`);
+    console.log(`User with ID ${UserID} joined challenge with ID ${ChallengeID}`);
     res.status(200).send('User joined challenge successfully');
   } catch (error) {
     console.error('Error joining challenge:', error); // Log any errors that occur
@@ -250,27 +249,31 @@ app.post('/joinChallenge', async (req, res) => {
 app.post('/completeChallenge', async (req, res) => {
   let dbInstance; // Declare dbInstance outside the try-catch block
   try {
-    const { UserID, Challenge_ID } = req.body;
+    const { UserID, ChallengeID } = req.body;
     dbInstance = await createConnection(); // Initialize dbInstance
-    console.log(UserID, Challenge_ID);
+    console.log(UserID, ChallengeID);
     await dbInstance.beginTransaction(); // Begin transaction
     
     // Update TripCompleted value to 1 (completed) for the specific challenge and user
-    const updateTripSql = 'UPDATE trips SET TripCompleted = 1 WHERE UserID = ? AND Challenge_ID = ?';
-    await dbInstance.query(updateTripSql, [UserID, Challenge_ID]);
+    const updateTripSql = 'UPDATE trips SET TripCompleted = 1 WHERE UserID = ? AND ChallengeID = ?';
+    await dbInstance.query(updateTripSql, [UserID, ChallengeID]);
+    
+    // Fetch BadgeID from challenges table based on ChallengeID
+    const [challengeResult] = await dbInstance.query('SELECT BadgeID FROM challenges WHERE ChallengeID = ?', [ChallengeID]);
+    const BadgeID = challengeResult[0].BadgeID;
     
     // Execute stored procedure to update leaderboard
     const updateSql = 'CALL UpdateOverallLeaderboard(?)';
     await dbInstance.query(updateSql, [UserID]); // Call stored procedure with UserID
     
     // Insert badge into userbadge table
-    const insertBadgeSql = 'INSERT INTO userbadge values (?, ?)';
-    await dbInstance.query(insertBadgeSql, [UserID, Challenge_ID]);
+    const insertBadgeSql = 'INSERT INTO userbadge (UserID, BadgeID) VALUES (?, ?)';
+    await dbInstance.query(insertBadgeSql, [UserID, BadgeID]);
     
     // Commit transaction
     await dbInstance.commit();
     
-    console.log(`Challenge ${Challenge_ID} completed for user with ID ${UserID}`);
+    console.log(`Challenge ${ChallengeID} completed for user with ID ${UserID}`);
     res.status(200).send('Challenge marked as completed successfully');
   } catch (error) {
     // Rollback transaction on error
@@ -293,7 +296,7 @@ app.get('/userChallenges', async (req, res) => {
     let sql = `
       SELECT c.*, t.TripCompleted
       FROM challenges c
-      INNER JOIN trips t ON c.Challenge_ID = t.Challenge_ID
+      INNER JOIN trips t ON c.ChallengeID = t.ChallengeID
       WHERE t.UserID = ?
     `;
     const [results] = await dbInstance.query(sql, [UserID]);
@@ -312,3 +315,23 @@ app.get('/userChallenges', async (req, res) => {
   }
 });
 
+// Get achievements for a specific user
+app.get('/userbadge/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const dbInstance = await createConnection();
+    let sql = `
+      SELECT b.BadgeName, b.Description
+      FROM userbadge ub
+      INNER JOIN badges b ON ub.BadgeID = b.BadgeID
+      WHERE ub.UserID = ?
+    `;
+    const [results] = await dbInstance.query(sql, [userId]);
+    console.log(results);
+    console.log(`Achievements fetched for user ${userId}`);
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});

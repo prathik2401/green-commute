@@ -6,8 +6,8 @@ const ChallengeDescription = ({ navigation, route }) => {
   const [userID, setUserID] = useState(null);
 
   useEffect(() => {
-    const { Challenge_ID } = route.params;
-    fetch(`http://192.168.58.128:3000/challenges/${Challenge_ID}`)
+    const { ChallengeID } = route.params;
+    fetch(`http://192.168.58.128:3000/challenges/${ChallengeID}`)
       .then((response) => response.json())
       .then((data) => setChallenge(data[0]))
       .catch((error) => console.error(error));
@@ -21,7 +21,7 @@ const ChallengeDescription = ({ navigation, route }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          Challenge_ID: challenge.Challenge_ID,
+          ChallengeID: challenge.ChallengeID,
           UserID: userID,
         }),
       })
@@ -29,7 +29,7 @@ const ChallengeDescription = ({ navigation, route }) => {
           if (response.ok) {
             console.log("User joined challenge successfully");
             navigation.navigate("Congratulations", {
-              Challenge_ID: challenge.Challenge_ID,
+              ChallengeID: challenge.ChallengeID,
             });
           } else {
             console.error("Failed to join challenge");
