@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const Achievements = ({UserId}) => {
+const Achievements = ({ userID }) => {
   const [achievementsData, setAchievementsData] = useState([]);
-
+  console.log(userID);
   useEffect(() => {
-    fetch("http://192.168.29.213:3000/achievements") // Replace with your server's IP and endpoint
-      .then((response) => response.json())
-      .then((data) => setAchievementsData(data))
-      .catch((error) => console.error(error));
-  }, []);
+    const fetchAchievements = async () => {
+      try {
+        const response = await fetch(
+          `http://192.168.0.101:3000/userbadge/${userID}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAchievementsData(data);
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    };
+
+    fetchAchievements();
+  }, [userID]);
 
   return (
     <View style={styles.container}>
       {achievementsData.map((achievement, index) => (
-        <View key={achievement.achievements_id} style={styles.card}>
-          <Text style={styles.title}>{achievement.achievements_title}</Text>
-          <Text style={styles.description}>
-            {achievement.achievements_description}
-          </Text>
+        <View key={index} style={styles.card}>
+          <Text style={styles.title}>{achievement.BadgeName}</Text>
+          <Text style={styles.description}>{achievement.Description}</Text>
         </View>
       ))}
     </View>

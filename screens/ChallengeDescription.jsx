@@ -3,19 +3,40 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const ChallengeDescription = ({ navigation, route }) => {
   const [challenge, setChallenge] = useState(null);
+  const [userID, setUserID] = useState(null);
 
   useEffect(() => {
-    const { ChallengeID } = route.params;
-    fetch(`http://192.168.0.101:3000/challenges/${ChallengeID}`) // Replace with your server's IP and port
+    const { Challenge_ID } = route.params;
+    fetch(`http://192.168.0.101:3000/challenges/${Challenge_ID}`)
       .then((response) => response.json())
       .then((data) => setChallenge(data[0]))
       .catch((error) => console.error(error));
   }, []);
 
   const handleJoinChallenge = () => {
-    navigation.navigate("Congratulations", {
-      ChallengeID: challenge.ChallengeID,
-    });
+    if (challenge && userID) {
+      fetch("http://192.168.0.101:3000/joinChallenge", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Challenge_ID: challenge.Challenge_ID,
+          UserID: userID,
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("User joined challenge successfully");
+            navigation.navigate("Congratulations", {
+              Challenge_ID: challenge.Challenge_ID,
+            });
+          } else {
+            console.error("Failed to join challenge");
+          }
+        })
+        .catch((error) => console.error(error));
+    }
   };
 
   return (

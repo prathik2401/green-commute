@@ -8,17 +8,18 @@ import {
 } from "react-native";
 import FooterNavigation from "./FooterNavigation";
 import UserComponent from "./ProfilePage";
+import Achievements from "./Achievements";
 
 const HomePage = ({ navigation, route }) => {
   const moveAnim = useRef(new Animated.Value(0)).current;
   const [showUser, setShowUser] = useState(false);
   const [user, setUser] = useState(null);
+  const [showAchievements, setShowAchievements] = useState(false);
 
   useEffect(() => {
-    // Retrieve user information from route params when component mounts
     if (route.params) {
-      const { UserName, FirstName, LastName, Email } = route.params;
-      setUser({ UserName, FirstName, LastName, Email });
+      const { UserName, FirstName, LastName, Email, UserID } = route.params;
+      setUser({ UserName, FirstName, LastName, Email, UserID });
     }
   }, [route.params]);
 
@@ -28,11 +29,22 @@ const HomePage = ({ navigation, route }) => {
 
   const handleHomeButtonPress = () => {
     setShowUser(false);
+    setShowAchievements(false);
+  };
+
+  const handleAchievementsButtonPress = () => {
+    setShowAchievements(true);
+  };
+
+  const handleJoinChallenge = () => {
+    navigation.navigate("Challenges", {
+      UserID: user?.UserID,
+    });
   };
 
   return (
     <View style={styles.container}>
-      {!showUser ? (
+      {!showUser && !showAchievements ? (
         <>
           <Animated.View style={{ transform: [{ translateY: moveAnim }] }}>
             <Text style={styles.title}>Welcome to</Text>
@@ -50,13 +62,17 @@ const HomePage = ({ navigation, route }) => {
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.longbutton}
-              onPress={() => navigation.navigate("CommutePlannerPage")}
+              onPress={() =>
+                navigation.navigate("CompletedChallengesScreen", {
+                  UserID: user?.UserID,
+                })
+              }
             >
-              <Text style={styles.buttonText}>Plan Your Commute</Text>
+              <Text style={styles.buttonText}>Track Your Progress</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.shortbutton}
-              onPress={() => navigation.navigate("Challenges")}
+              onPress={handleJoinChallenge}
             >
               <Text style={styles.buttonText}>Challenges</Text>
             </TouchableOpacity>
@@ -64,7 +80,7 @@ const HomePage = ({ navigation, route }) => {
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.bottomshortbutton}
-              onPress={() => navigation.navigate("Achievements")}
+              onPress={handleAchievementsButtonPress}
             >
               <Text style={styles.buttonText}>Achievements</Text>
             </TouchableOpacity>
@@ -76,8 +92,14 @@ const HomePage = ({ navigation, route }) => {
             </TouchableOpacity>
           </View>
         </>
+      ) : !showAchievements ? (
+        <UserComponent
+          user={user}
+          onDelete={() => {}}
+          navigation={navigation} // Pass the navigation prop to UserComponent
+        />
       ) : (
-        <UserComponent user={user} onDelete={() => {}} />
+        <Achievements userID={user?.UserID} />
       )}
       <FooterNavigation
         navigation={navigation}
